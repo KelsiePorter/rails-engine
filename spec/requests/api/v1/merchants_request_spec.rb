@@ -36,11 +36,11 @@ describe 'Merchants API' do
   end
 
   it 'can get one merchant by its id' do 
-    id = create(:merchant).id
+    merchant = create(:merchant)
 
-    get "/api/v1/merchants/#{id}"
+    get "/api/v1/merchants/#{merchant1.id}"
 
-    merchant = JSON.parse(response.body, symbolize_names: true)
+    merchant_response = JSON.parse(response.body, symbolize_names: true)
 
     expect(response).to be_successful
     expect(merchant[:data]).to have_key(:id)
@@ -48,6 +48,7 @@ describe 'Merchants API' do
     expect(merchant[:data][:type]).to eq("merchant")
     expect(merchant[:data]).to have_key(:attributes)
     expect(merchant[:data][:attributes]).to have_key(:name)
+    expect(merchant[:data][:attributes][:name]).to eq(merchant.name)
   end
 
   it 'returns an error response when the merchant id does not exist' do 
