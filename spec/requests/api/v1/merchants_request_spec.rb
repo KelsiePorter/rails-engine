@@ -52,15 +52,16 @@ describe 'Merchants API' do
   end
 
   it 'returns an error response when the merchant id does not exist' do 
+    merchant = create(:merchant)
 
-    get "/api/v1/merchants/1"
+    get "/api/v1/merchants/#{Merchant.last.id+1}"
 
     merchant = JSON.parse(response.body, symbolize_names: true)
 
     expect(merchant[:error]).to have_key(:status)
     expect(merchant[:error][:status]).to eq("NOT FOUND")
     expect(merchant[:error]).to have_key(:message)
-    expect(merchant[:error][:message]).to eq("Couldn't find Merchant with 'id'=1")
+    expect(merchant[:error][:message]).to eq("Couldn't find Merchant with 'id'=#{Merchant.last.id+1}")
     expect(merchant[:error]).to have_key(:code)
     expect(merchant[:error][:code]).to eq(404)
   end
