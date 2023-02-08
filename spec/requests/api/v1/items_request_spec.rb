@@ -237,7 +237,7 @@ describe 'Items API' do
     expect(Merchant.count).to eq(1)
     expect(Item.count).to eq(2)
     expect(InvoiceItem.count).to eq(3)
-
+    
     delete "/api/v1/items/#{item1.id}"
 
     expect(response).to be_successful
@@ -250,7 +250,17 @@ describe 'Items API' do
     expect(Merchant.count).to eq(1)
   end
 
-  xit 'returns a 204 HTTP status code, not a JSON body' do
-    
+  it 'returns an error response when the item id does not exist' do 
+
+    delete "/api/v1/items/1"
+
+    item_response = JSON.parse(response.body, symbolize_names: true)
+
+    expect(item_response[:error]).to have_key(:status)
+    expect(item_response[:error][:status]).to eq("NOT FOUND")
+    expect(item_response[:error]).to have_key(:message)
+    expect(item_response[:error][:message]).to eq("Couldn't find Item with 'id'=1")
+    expect(item_response[:error]).to have_key(:code)
+    expect(item_response[:error][:code]).to eq(404)
   end
 end

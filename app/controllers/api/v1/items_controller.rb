@@ -57,7 +57,16 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def destroy
-    Item.delete(params[:id])
+    begin
+      Item.destroy(params[:id])
+    rescue StandardError => e
+      error_item = ErrorItem.new(
+        e.message, 
+        "NOT FOUND",
+        404
+      )
+      render json: ErrorItemSerializer.new(error_item).serialized_json
+    end
   end
 
   private
