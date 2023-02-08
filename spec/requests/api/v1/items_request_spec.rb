@@ -75,10 +75,10 @@ describe 'Items API' do
     merchant = create(:merchant)
     item_params = (
       {
-      "name": "value1",
-      "description": "value2",
-      "unit_price": 100.99,
-      "merchant_id": merchant.id
+        "name": "value1",
+        "description": "value2",
+        "unit_price": 100.99,
+        "merchant_id": merchant.id
       }
     )
     headers = {"CONTENT_TYPE" => "application/json"}
@@ -120,11 +120,11 @@ describe 'Items API' do
     merchant = create(:merchant)
     item_params = (
       {
-      "name": "value1",
-      "description": "value2",
-      "unit_price": 100.99,
-      "merchant_id": merchant.id,
-      "number_sold": 14
+        "name": "value1",
+        "description": "value2",
+        "unit_price": 100.99,
+        "merchant_id": merchant.id,
+        "number_sold": 14
       }
     )
     headers = {"CONTENT_TYPE" => "application/json"}
@@ -180,5 +180,35 @@ describe 'Items API' do
     expect(item_response[:error][:message]).to eq("Unit price is not a number")
     expect(item_response[:error]).to have_key(:code)
     expect(item_response[:error][:code]).to eq(400)
+  end
+
+  it 'returns an error when trying to update an item that doesnt exist' do 
+    merchant = create(:merchant)
+    item_params = (
+      {
+      "name": "Dog toy",
+      "description": "dog can play with it",
+      "unit_price": "ten dollars",
+      "merchant_id": merchant.id
+      }
+    )
+    headers = {"CONTENT_TYPE" => "application/json"}
+    
+    patch "/api/v1/items/150", headers: headers, params: JSON.generate(item: item_params)
+
+
+    item_response = JSON.parse(response.body, symbolize_names: true)
+
+    expect(item_response[:error]).to have_key(:status)
+    expect(item_response[:error][:status]).to eq("NOT FOUND")
+    expect(item_response[:error]).to have_key(:message)
+    expect(item_response[:error][:message]).to eq("Couldn't find Item with 'id'=150")
+    expect(item_response[:error]).to have_key(:code)
+    expect(item_response[:error][:code]).to eq(404)
+  end
+
+  it 'can destroy an item' do 
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
   end
 end
