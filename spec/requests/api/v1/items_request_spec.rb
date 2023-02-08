@@ -70,4 +70,70 @@ describe 'Items API' do
     expect(item_response[:error]).to have_key(:code)
     expect(item_response[:error][:code]).to eq(404)
   end
+
+  it 'can create a new item' do 
+    merchant = create(:merchant)
+    item_params = (
+      {
+      "name": "value1",
+      "description": "value2",
+      "unit_price": 100.99,
+      "merchant_id": merchant.id
+      }
+    )
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+    created_item = Item.last
+
+    expect(response).to be_successful
+    expect(created_item.name).to eq(item_params[:name])
+    expect(created_item.description).to eq(item_params[:description])
+    expect(created_item.unit_price).to eq(item_params[:unit_price])
+    expect(created_item.merchant_id).to eq(item_params[:merchant_id])
+  end
+
+  it 'returns and error when an attribute is missing' do 
+    merchant = create(:merchant)
+    item_params = (
+      {
+      "name": "value1",
+      "description": "value2",
+      "unit_price": '',
+      "merchant_id": merchant.id
+      }
+    )
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+    item_response = JSON.parse(response.body, symbolize_names: true)
+
+    expect(item_response[:error]).to have_key(:status)
+    expect(item_response[:error][:status]).to eq("BAD REQUEST")
+    expect(item_response[:error]).to have_key(:message)
+    expect(item_response[:error][:message]).to eq("Unit price can't be blank")
+    expect(item_response[:error]).to have_key(:code)
+    expect(item_response[:error][:code]).to eq(400)
+  end
+
+  it 'ignores attributes from the user which are not allowed' do 
+    merchant = create(:merchant)
+    item_params = (
+      {
+      "name": "value1",
+      "description": "value2",
+      "unit_price": 100.99,
+      "merchant_id": merchant.id,
+      "number_sold": 14
+      }
+    )
+    headers = {"CONTENT_TYPE" => "application/json"}
+
+    post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+    item_response = JSON.parse(response.body, symbolize_names: true)
+
+
+    expect(response).to be_successful
+    expect(item_response[:data][:attributes]).to_not have_key(:number_sold)
+  end
 end
