@@ -16,4 +16,25 @@ class Api::V1::ItemsController < ApplicationController
       render json: ErrorItemSerializer.new(error_item).serialized_json
     end
   end
+
+  def create
+    item = Item.new(item_params)
+
+    if item.save
+      render json: ItemSerializer.new(item)
+    else
+      error_item = ErrorItem.new(
+        item.errors.full_messages.to_sentence,
+        "BAD REQUEST",
+        400
+      )
+      render json: ErrorItemSerializer.new(error_item).serialized_json
+    end
+  end
+
+  private
+
+  def item_params
+    params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
+  end
 end
