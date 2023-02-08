@@ -222,10 +222,10 @@ describe 'Items API' do
   end
 
   it 'destroys the invoice if the deleted item is the only item on the invoice' do 
-    customer = Customer.create!(first_name: 'Joey', last_name: 'Smith')
-    invoice1 = Invoice.create!(customer_id: customer.id, status: 2)
-    invoice2 = Invoice.create!(customer_id: customer.id, status: 2)
     merchant = create(:merchant)
+    customer = Customer.create!(first_name: 'Joey', last_name: 'Smith')
+    invoice1 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 2)
+    invoice2 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 2)
     item1 = create(:item, merchant_id: merchant.id)
     item2 = create(:item, merchant_id: merchant.id)
     ii1 = InvoiceItem.create!(invoice_id: invoice1.id, item_id: item1.id, quantity: 9, unit_price: 10)
