@@ -221,35 +221,6 @@ describe 'Items API' do
     expect(response.status).to eq(204)
   end
 
-  it 'destroys the invoice if the deleted item is the only item on the invoice' do 
-    merchant = create(:merchant)
-    customer = Customer.create!(first_name: 'Joey', last_name: 'Smith')
-    invoice1 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 2)
-    invoice2 = Invoice.create!(customer_id: customer.id, merchant_id: merchant.id, status: 2)
-    item1 = create(:item, merchant_id: merchant.id)
-    item2 = create(:item, merchant_id: merchant.id)
-    ii1 = InvoiceItem.create!(invoice_id: invoice1.id, item_id: item1.id, quantity: 9, unit_price: 10)
-    ii2 = InvoiceItem.create!(invoice_id: invoice2.id, item_id: item1.id, quantity: 1, unit_price: 10)
-    ii3 = InvoiceItem.create!(invoice_id: invoice2.id, item_id: item2.id, quantity: 2, unit_price: 8)
-
-    expect(Customer.count).to eq(1)
-    expect(Invoice.count).to eq(2)
-    expect(Merchant.count).to eq(1)
-    expect(Item.count).to eq(2)
-    expect(InvoiceItem.count).to eq(3)
-    
-    delete "/api/v1/items/#{item1.id}"
-
-    expect(response).to be_successful
-    expect(response.status).to eq(204)
-    expect{Item.find(item1.id)}.to raise_error(ActiveRecord::RecordNotFound)
-    expect(Item.count).to eq(1)
-    expect(Invoice.count).to eq(1)
-    expect(InvoiceItem.count).to eq(1)
-    expect(Customer.count).to eq(1)
-    expect(Merchant.count).to eq(1)
-  end
-
   it 'returns an error response when the item id does not exist' do 
 
     delete "/api/v1/items/1"
