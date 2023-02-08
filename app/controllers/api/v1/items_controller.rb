@@ -33,15 +33,37 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def update
-    item = Item.find(params[:id])
+    begin
+      item = Item.find(params[:id])
 
-    if item.update(item_params)
-      render json: ItemSerializer.new(item)
-    else
+      if item.update(item_params)
+        render json: ItemSerializer.new(item)
+      else
+        error_item = ErrorItem.new(
+          item.errors.full_messages.to_sentence,
+          "BAD REQUEST",
+          400
+        )
+        render json: ErrorItemSerializer.new(error_item).serialized_json
+      end
+    rescue StandardError => e
       error_item = ErrorItem.new(
-        item.errors.full_messages.to_sentence,
-        "BAD REQUEST",
-        400
+        e.message, 
+        "NOT FOUND",
+        404
+      )
+      render json: ErrorItemSerializer.new(error_item).serialized_json
+    end
+  end
+
+  def destroy
+    begin
+      Item.destroy(params[:id])
+    rescue StandardError => e
+      error_item = ErrorItem.new(
+        e.message, 
+        "NOT FOUND",
+        404
       )
       render json: ErrorItemSerializer.new(error_item).serialized_json
     end
