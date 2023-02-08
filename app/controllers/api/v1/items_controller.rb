@@ -35,7 +35,7 @@ class Api::V1::ItemsController < ApplicationController
   def update
     begin
       item = Item.find(params[:id])
-      
+
       if item.update(item_params)
         render json: ItemSerializer.new(item)
       else
@@ -54,6 +54,10 @@ class Api::V1::ItemsController < ApplicationController
       )
       render json: ErrorItemSerializer.new(error_item).serialized_json
     end
+  end
+
+  def destroy
+    Item.delete(params[:id])
   end
 
   private

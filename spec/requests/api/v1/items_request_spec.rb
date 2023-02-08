@@ -210,5 +210,47 @@ describe 'Items API' do
   it 'can destroy an item' do 
     merchant = create(:merchant)
     item = create(:item, merchant_id: merchant.id)
+
+    expect(Item.count).to eq(1)
+
+    delete "/api/v1/items/#{item.id}"
+
+    expect(response).to be_successful
+    expect(Item.count).to eq(0)
+    expect{Item.find(item.id)}.to raise_error(ActiveRecord::RecordNotFound)
+    expect(response.status).to eq(204)
+  end
+
+  it 'destroys the invoice if the deleted item is the only item on the invoice' do 
+    customer = Customer.create!(first_name: 'Joey', last_name: 'Smith')
+    invoice1 = Invoice.create!(customer_id: customer.id, status: 2)
+    invoice2 = Invoice.create!(customer_id: customer.id, status: 2)
+    merchant = create(:merchant)
+    item1 = create(:item, merchant_id: merchant.id)
+    item2 = create(:item, merchant_id: merchant.id)
+    ii1 = InvoiceItem.create!(invoice_id: invoice1.id, item_id: item1.id, quantity: 9, unit_price: 10)
+    ii2 = InvoiceItem.create!(invoice_id: invoice2.id, item_id: item1.id, quantity: 1, unit_price: 10)
+    ii3 = InvoiceItem.create!(invoice_id: invoice2.id, item_id: item2.id, quantity: 2, unit_price: 8)
+
+    expect(Customer.count).to eq(1)
+    expect(Invoice.count).to eq(2)
+    expect(Merchant.count).to eq(1)
+    expect(Item.count).to eq(2)
+    expect(InvoiceItem.count).to eq(3)
+
+    delete "/api/v1/items/#{item1.id}"
+
+    expect(response).to be_successful
+    expect(response.status).to eq(204)
+    expect{Item.find(item1.id)}.to raise_error(ActiveRecord::RecordNotFound)
+    expect(Item.count).to eq(1)
+    expect(Invoice.count).to eq(1)
+    expect(InvoiceItem.count).to eq(1)
+    expect(Customer.count).to eq(1)
+    expect(Merchant.count).to eq(1)
+  end
+
+  xit 'returns a 204 HTTP status code, not a JSON body' do
+    
   end
 end
