@@ -111,7 +111,7 @@ describe 'Items API' do
     expect(item_response[:error]).to have_key(:status)
     expect(item_response[:error][:status]).to eq("BAD REQUEST")
     expect(item_response[:error]).to have_key(:message)
-    expect(item_response[:error][:message]).to eq("Unit price can't be blank")
+    expect(item_response[:error][:message]).to eq("Unit price can't be blank and Unit price is not a number")
     expect(item_response[:error]).to have_key(:code)
     expect(item_response[:error][:code]).to eq(400)
   end
@@ -135,5 +135,50 @@ describe 'Items API' do
 
     expect(response).to be_successful
     expect(item_response[:data][:attributes]).to_not have_key(:number_sold)
+  end
+
+  it 'can update an exisiting item' do
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
+    item_params = (
+      {
+      "name": "Dog toy",
+      "description": "dog can play with it",
+      "unit_price": 10.99,
+      "merchant_id": merchant.id
+      }
+    )
+    headers = {"CONTENT_TYPE" => "application/json"}
+    
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+    updated_item = Item.find_by(id: item.id)
+
+    expect(response).to be_successful
+    expect(updated_item.name).to_not eq(item.name)
+    expect(updated_item.name).to eq(item_params[:name])
+  end
+
+  it 'returns and error when the item was not updated due to missing/incorrect attribute' do 
+    merchant = create(:merchant)
+    item = create(:item, merchant_id: merchant.id)
+    item_params = (
+      {
+      "name": "Dog toy",
+      "description": "dog can play with it",
+      "unit_price": "ten dollars",
+      "merchant_id": merchant.id
+      }
+    )
+    headers = {"CONTENT_TYPE" => "application/json"}
+    
+    patch "/api/v1/items/#{item.id}", headers: headers, params: JSON.generate(item: item_params)
+    item_response = JSON.parse(response.body, symbolize_names: true)
+
+    expect(item_response[:error]).to have_key(:status)
+    expect(item_response[:error][:status]).to eq("BAD REQUEST")
+    expect(item_response[:error]).to have_key(:message)
+    expect(item_response[:error][:message]).to eq("Unit price is not a number")
+    expect(item_response[:error]).to have_key(:code)
+    expect(item_response[:error][:code]).to eq(400)
   end
 end
