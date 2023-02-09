@@ -58,6 +58,7 @@ describe 'Merchants API' do
 
     merchant = JSON.parse(response.body, symbolize_names: true)
 
+    expect(response.status).to eq(404)
     expect(merchant[:error]).to have_key(:status)
     expect(merchant[:error][:status]).to eq("NOT FOUND")
     expect(merchant[:error]).to have_key(:message)
