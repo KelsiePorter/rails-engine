@@ -1,8 +1,7 @@
-class Api::V1::Items::MerchantsController < ApplicationController
-  def index
+class Api::V1::Items::MerchantController < ApplicationController
+  def show
     begin
       item = Item.find(params[:item_id])
-
       render json: MerchantSerializer.new(item.merchant)
     rescue StandardError => e
       error_item = ErrorItem.new(

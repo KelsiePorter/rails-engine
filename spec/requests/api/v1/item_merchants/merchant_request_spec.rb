@@ -8,7 +8,7 @@ RSpec.describe 'Items Merchants Index API' do
     get "/api/v1/items/#{item.id}/merchant"
 
     item_merchant = JSON.parse(response.body, symbolize_names: true)
-    # require 'pry'; binding.pry
+
     expect(response).to be_successful
     expect(item_merchant[:data]).to have_key(:id)
     expect(item_merchant[:data]).to have_key(:type)
