@@ -21,7 +21,7 @@ class Api::V1::ItemsController < ApplicationController
     item = Item.new(item_params)
 
     if item.save
-      render json: ItemSerializer.new(item)
+      render json: ItemSerializer.new(item), status: 201
     else
       error_item = ErrorItem.new(
         item.errors.full_messages.to_sentence,
@@ -44,7 +44,7 @@ class Api::V1::ItemsController < ApplicationController
           "BAD REQUEST",
           400
         )
-        render json: ErrorItemSerializer.new(error_item).serialized_json
+        render json: ErrorItemSerializer.new(error_item).serialized_json, status: 400
       end
     rescue StandardError => e
       error_item = ErrorItem.new(
@@ -63,9 +63,9 @@ class Api::V1::ItemsController < ApplicationController
       error_item = ErrorItem.new(
         e.message, 
         "NOT FOUND",
-        201
+        404
       )
-      render json: ErrorItemSerializer.new(error_item).serialized_json, status: 201
+      render json: ErrorItemSerializer.new(error_item).serialized_json, status: 404
     end
   end
 

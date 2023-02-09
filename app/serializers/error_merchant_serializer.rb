@@ -5,11 +5,13 @@ class ErrorMerchantSerializer
 
   def serialized_json
     {
-      error: {
+      errors: [
+        {
           status: @error_object.status,
           message: @error_object.message,
           code: @error_object.code
         }
+      ]
     }
   end
 end

@@ -59,11 +59,11 @@ describe 'Merchants API' do
     merchant = JSON.parse(response.body, symbolize_names: true)
 
     expect(response.status).to eq(404)
-    expect(merchant[:error]).to have_key(:status)
-    expect(merchant[:error][:status]).to eq("NOT FOUND")
-    expect(merchant[:error]).to have_key(:message)
-    expect(merchant[:error][:message]).to eq("Couldn't find Merchant with 'id'=#{Merchant.last.id+1}")
-    expect(merchant[:error]).to have_key(:code)
-    expect(merchant[:error][:code]).to eq(404)
+    expect(merchant[:errors][0]).to have_key(:status)
+    expect(merchant[:errors][0][:status]).to eq("NOT FOUND")
+    expect(merchant[:errors][0]).to have_key(:message)
+    expect(merchant[:errors][0][:message]).to eq("Couldn't find Merchant with 'id'=#{Merchant.last.id+1}")
+    expect(merchant[:errors][0]).to have_key(:code)
+    expect(merchant[:errors][0][:code]).to eq(404)
   end
 end
