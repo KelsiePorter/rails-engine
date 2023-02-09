@@ -9,7 +9,7 @@ class Api::V1::Items::MerchantController < ApplicationController
         "NOT FOUND",
         404
       )
-      render json: ErrorItemSerializer.new(error_item).serialized_json
+      render json: ErrorItemSerializer.new(error_item).serialized_json, status: 404
     end
   end
 end

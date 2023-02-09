@@ -4,12 +4,6 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def show
-    # if Item.exists?(params[:id])
-    #   item = Item.find(params[:id])
-    #   render json: ItemSerializer.new(item)
-    # else
-    #   render json: { data: ""}
-    # end
     begin
       item = Item.find(params[:id])
       render json: ItemSerializer.new(item)
@@ -58,7 +52,7 @@ class Api::V1::ItemsController < ApplicationController
         "NOT FOUND",
         404
       )
-      render json: ErrorItemSerializer.new(error_item).serialized_json
+      render json: ErrorItemSerializer.new(error_item).serialized_json, status: 404
     end
   end
 
@@ -69,9 +63,9 @@ class Api::V1::ItemsController < ApplicationController
       error_item = ErrorItem.new(
         e.message, 
         "NOT FOUND",
-        404
+        201
       )
-      render json: ErrorItemSerializer.new(error_item).serialized_json
+      render json: ErrorItemSerializer.new(error_item).serialized_json, status: 201
     end
   end
 
