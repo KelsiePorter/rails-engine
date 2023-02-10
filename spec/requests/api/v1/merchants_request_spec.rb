@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Merchants API' do 
+RSpec.describe 'Merchants API' do 
   it 'sends a list of all merchants' do 
     3.times do 
       create(:merchant)
