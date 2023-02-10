@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Items API' do 
+RSpec.describe 'Items API' do 
   it 'sends a list of all items' do 
     merchant = create(:merchant)
     3.times do 
@@ -24,8 +24,8 @@ describe 'Items API' do
       expect(item[:attributes]).to have_key(:description)
       expect(item[:attributes]).to have_key(:unit_price)
       # expect(item[:attributes]).to_not have_key(:merchant_id)
-      #not supposed to have merchant_id according to example
-      #but need it in the itemsserializer to pass in postman 
+      #Conflicting with project instructions vs. Postman
+      #Instructions say: NOT include dependent data of the resource 
     end
   end
 
