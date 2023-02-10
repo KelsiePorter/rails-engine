@@ -41,5 +41,19 @@ RSpec.describe 'Merchant Search API' do
       expect(search_result[:data].size).to eq(0)
       expect(search_result[:data]).to eq([])
     end
+
+    it 'user receives an error if using incorrect parameters' do 
+      merchant1 = create(:merchant, name: "Turing")
+      merchant2 = create(:merchant, name: "Ring World")
+      merchant3 = create(:merchant, name: "Bring It")
+      merchant4 = create(:merchant, name: "Dog World")
+
+      get "/api/v1/merchants/find_all?"
+
+      search_result = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response.status).to eq(400)
+      expect(response.message).to eq("Bad Request")
+    end
   end
 end

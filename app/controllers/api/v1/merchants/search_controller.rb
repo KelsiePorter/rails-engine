@@ -11,8 +11,8 @@ class Api::V1::Merchants::SearchController < ApplicationController
 
   def find_by_name
     merchant = Merchant.where("lower(name) like ?", "%#{sanitized_name}%")
-    .order('name')
-render json: MerchantSerializer.new(merchant)
+                        .order('name')
+    render json: MerchantSerializer.new(merchant)
   end
 
   def permitted_params
